@@ -2,14 +2,11 @@
 #define SCENE_H
 
 template <typename T>
-class scene : public geometry<T> {
+class geometry_group : public geometry<T> {
 public:
   vector<shared_ptr<geometry<T>>> m_objects;
 
-  scene() {}
-  scene(shared_ptr<geometry<T>> object) {
-    add(object);
-  }
+  geometry_group() {}
 
   void clear() {
     m_objects.clear();

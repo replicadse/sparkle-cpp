@@ -30,7 +30,7 @@ int main() {
     const int image_height = static_cast<int>(image_width / aspect_ratio);
 
     // World
-    scene<float> world;
+    geometry_group<float> world;
     world.add(make_shared<sphere<float>>(point3<float>(0,0,-1), 0.5f));
     world.add(make_shared<sphere<float>>(point3<float>(0,-100.5,-1), 100.0f));
 
