@@ -54,7 +54,7 @@ void generate_world(geometry_group<T>& world) {
   world.add(make_shared<sphere<float>>(point3<float>(-1.0, -0.3, -2.0), 0.2, material_left));
   world.add(make_shared<sphere<float>>(point3<float>(0.6, 0.1, -1.5), 0.5, material_right));
 
-  world.add(make_shared<sphere<float>>(point3<float>(-2.0, 0.1, -4), 0.3, material_right));
+  world.add(make_shared<sphere<float>>(point3<float>(-2.0, -0.3, -4), 0.6, material_right));
   world.add(make_shared<sphere<float>>(point3<float>(-1.0, 0.3, -4), 0.5, material_left));
   world.add(make_shared<sphere<float>>(point3<float>(0.0, 0.2, -4), 0.2, material_center));
   world.add(make_shared<sphere<float>>(point3<float>(1, 0, -4), 0.6, material_left));
