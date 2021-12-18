@@ -1,10 +1,16 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#include "material.hpp"
+
+template <typename T>
+class material;
+
 template <typename T>
 struct hit_rec {
   point3<T> p;
   vec3<T> normal;
+  shared_ptr<material<T>> mat_ptr;
   T t;
   bool front_face;
 
@@ -26,11 +32,13 @@ class sphere : public geometry<T> {
 public:
   point3<T> m_center;
   T m_radius;
+  shared_ptr<material<T>> m_material_ptr;
 
   sphere() {}
-  sphere(const point3<T> center, T radius) {
+  sphere(const point3<T> center, T radius, shared_ptr<material<T>> material_ptr) {
     m_center = center;
     m_radius = radius;
+    m_material_ptr = material_ptr;
   }
 
   virtual bool hit(const ray3<T>& r, const T t_min, const T t_max, hit_rec<T>& hit) const override {
@@ -56,6 +64,7 @@ public:
     hit.p = r.at(hit.t);
     auto outward_normal = (hit.p - m_center) / m_radius;
     hit.set_face_normal(r, outward_normal);
+    hit.mat_ptr = m_material_ptr;
 
     return true;
   }

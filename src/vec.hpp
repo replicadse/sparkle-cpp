@@ -102,6 +102,10 @@ public:
                   e[2] * v.e[0] - e[0] * v.e[2],
                   e[0] * v.e[1] - e[1] * v.e[0]);
   }
+
+  inline vec3 reflect(const vec3& n) const {
+    return *this - (2 * dot(n) * n);
+  }
 };
 
 template <typename T>

@@ -4,42 +4,25 @@
 #include "geometry.hpp"
 #include "scene.hpp"
 #include "camera.hpp"
+#include "material.hpp"
 
 using color3 = vec3<float>;
-
-enum DIFFUSE_MATERIAL_RENDER_METHOD {
-  DMRM_LAMBERTIAN_REFLECTION,
-  DMRM_TRUE_LAMBERTIAN_REFLECTION,
-  DMRM_RANDOM_ANGLE,
-};
-const int USED_DIFFUSE_RENDER_METHOD = DMRM_RANDOM_ANGLE;
 
 template <typename T>
 color3 ray_color(
   const ray3<T>& r, const geometry<T>& world,
   const int depth) {
-    const float REFLECTIVENESS = 0.4f;
     if (depth <= 0) {
       return color3(0, 0, 0);
     }
 
     hit_rec<T> rec;
     if (world.hit(r, 0.001, infinity, rec)) {
-        point3<T> target = rec.p + rec.normal;
-        switch (USED_DIFFUSE_RENDER_METHOD) {
-          case DMRM_LAMBERTIAN_REFLECTION:
-            target += random_in_unit_sphere<T>();
-            break;
-          case DMRM_TRUE_LAMBERTIAN_REFLECTION:
-            target += random_unit_vector<T>();
-            break;
-          case DMRM_RANDOM_ANGLE:
-            target += random_in_hemisphere<T>(rec.normal);
-            break;
-          default:
-            target += random_in_hemisphere<T>(rec.normal);
-        }
-        return REFLECTIVENESS * ray_color(ray3<T>(rec.p, target - rec.p), world, depth-1);
+      ray3<T> scattered;
+      color3 attenuation;
+      if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+        return attenuation * ray_color<T>(scattered, world, depth-1);
+      return color3(0, 0, 0);
     }
     vec3<T> unit_direction = r.direction().unit();
     auto t = 0.5f*(unit_direction.y() + 1.0f);
@@ -57,20 +40,26 @@ void write_color(std::ostream& out, color3 pixel_color, int samples_per_pixel) {
 }
 
 int main() {
-    const float aspect_ratio = 16.0f / 9.0f;
-    // const float aspect_ratio = 1.0f / 1.0f;
-    const int image_width = 640;
-    // const int image_width = 2;
+    const float aspect_ratio = 16.0f / 10.0f;
+    const int image_width = 1920;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 32;
-    const int max_depth = 32;
+    const int samples_per_pixel = 16;
+    const int max_depth = 16;
 
     auto cam = camera(aspect_ratio*2, 2, 1.0f);
 
+    // Materials
+    auto material_ground = make_shared<lambertian_material<float>>(color3(0.8, 0.8, 0.0));
+    auto material_center = make_shared<lambertian_material<float>>(color3(0.7, 0.3, 0.3));
+    auto material_left   = make_shared<metal_material<float>>(color3(0.8, 0.8, 0.8));
+    auto material_right  = make_shared<metal_material<float>>(color3(0.8, 0.6, 0.2));
+
     // World
     geometry_group<float> world;
-    world.add(make_shared<sphere<float>>(point3<float>(0,0,-1), 0.5f));
-    world.add(make_shared<sphere<float>>(point3<float>(0,-100.5,-1), 100.0f));
+    world.add(make_shared<sphere<float>>(point3<float>( 0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere<float>>(point3<float>( 0.0,    0.0, -1.0),   0.5, material_center));
+    world.add(make_shared<sphere<float>>(point3<float>(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<sphere<float>>(point3<float>( 1.2,    0.0, -1.0),   0.5, material_right));
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
     for (int k = image_height-1; k >= 0; --k) {
@@ -81,7 +70,7 @@ int main() {
               auto u = (i + random_float()) / (image_width-1);
               auto v = (k + random_float()) / (image_height-1);
               ray3<float> r = cam.shoot(u, v);
-              col += ray_color(r, world, max_depth);
+              col += ray_color<float>(r, world, max_depth);
             }
             write_color(std::cout, col, samples_per_pixel);
         }
