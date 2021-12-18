@@ -6,7 +6,7 @@ def task_x_exec(c, command):
 
 @task
 def task_x_compile(c):
-    c.run('g++ ./src/main.cpp -Wall -std=c++11 -o ./bin/program')
+    c.run('g++ ./src/main.cpp -Wall -std=c++11 -stdlib=libc++ -lc++ -o ./bin/program')
 
 ns = Collection()
 ns_x = Collection('x')
