@@ -18,9 +18,10 @@ template <typename T>
 color3 ray_color(
   const ray3<T>& r, const geometry<T>& world,
   const int depth) {
-  if (depth <= 0) {
-    return color3(0, 0, 0);
-  }
+    const float REFLECTIVENESS = 0.4f;
+    if (depth <= 0) {
+      return color3(0, 0, 0);
+    }
 
     hit_rec<T> rec;
     if (world.hit(r, 0.001, infinity, rec)) {
@@ -38,7 +39,7 @@ color3 ray_color(
           default:
             target += random_in_hemisphere<T>(rec.normal);
         }
-        return 0.5f * ray_color(ray3<T>(rec.p, target - rec.p), world, depth-1);
+        return REFLECTIVENESS * ray_color(ray3<T>(rec.p, target - rec.p), world, depth-1);
     }
     vec3<T> unit_direction = r.direction().unit();
     auto t = 0.5f*(unit_direction.y() + 1.0f);
