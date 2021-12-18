@@ -41,24 +41,34 @@ void write_color(std::ostream& out, color3 pixel_color, int samples_per_pixel) {
 
 int main() {
     const float aspect_ratio = 16.0f / 10.0f;
-    const int image_width = 1920;
+    const int image_width = 640;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 16;
-    const int max_depth = 16;
+    const int samples_per_pixel = 32;
+    const int max_depth = 32;
 
-    auto cam = camera(aspect_ratio*2, 2, 1.0f);
+    auto cam_origin = point3<float>(3, 3, 2);
+    auto cam_lookat = point3<float>(0, 0, -1);
+    auto cam = camera(
+      cam_origin,
+      (cam_origin - cam_lookat).unit(),
+      vec3<float>(0, 1, 0),
+      degrees_to_radians(90),
+      aspect_ratio,
+      2.0,
+      (cam_origin - cam_lookat).length()
+    );
 
     // Materials
     auto material_ground = make_shared<lambertian_material<float>>(color3(0.8, 0.8, 0.0));
-    auto material_center = make_shared<lambertian_material<float>>(color3(0.7, 0.3, 0.3));
-    auto material_left   = make_shared<metal_material<float>>(color3(0.8, 0.8, 0.8));
-    auto material_right  = make_shared<metal_material<float>>(color3(0.8, 0.6, 0.2));
+    auto material_center = make_shared<dielectric_material<float>>(1.7f);
+    auto material_left   = make_shared<lambertian_material<float>>(color3(0.1, 0.2, 0.5));
+    auto material_right  = make_shared<metal_material<float>>(color3(0.8, 0.6, 0.2), 0.2);
 
     // World
     geometry_group<float> world;
     world.add(make_shared<sphere<float>>(point3<float>( 0.0, -100.5, -1.0), 100.0, material_ground));
-    world.add(make_shared<sphere<float>>(point3<float>( 0.0,    0.0, -1.0),   0.5, material_center));
-    world.add(make_shared<sphere<float>>(point3<float>(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<sphere<float>>(point3<float>( 0.0,    0.0, -1.5),   0.5, material_center));
+    world.add(make_shared<sphere<float>>(point3<float>(-1.0,    0.0, -4.0),   0.5, material_left));
     world.add(make_shared<sphere<float>>(point3<float>( 1.2,    0.0, -1.0),   0.5, material_right));
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";

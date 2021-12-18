@@ -93,4 +93,13 @@ vec3<T> random_in_hemisphere(const vec3<T>& normal) {
     return vius * -1;
 }
 
+template <typename T>
+vec3<T> random_in_unit_disk() {
+  while(true) {
+    auto p = vec3<T>(random_float(-1, 1), random_float(-1, 1), 0);
+    if (p.length_sqr() >= 1) continue;
+    return p;
+  }
+}
+
 #endif

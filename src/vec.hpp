@@ -106,6 +106,12 @@ public:
   inline vec3 reflect(const vec3& n) const {
     return *this - (2 * dot(n) * n);
   }
+  inline vec3 refract(const vec3& n, const T etai_over_etat) const {
+    auto cos_theta = static_cast<T>(fmin((*this * -1).dot(n), 1.0));
+    vec3<T> r_out_perp = etai_over_etat * (*this + cos_theta*n);
+    vec3<T> r_out_parallel = static_cast<T>(-sqrt(fabs(1.0 - r_out_perp.length_sqr()))) * n;
+    return r_out_perp + r_out_parallel;
+  }
 };
 
 template <typename T>
