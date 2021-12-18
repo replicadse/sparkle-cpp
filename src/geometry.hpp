@@ -21,7 +21,7 @@ public:
   virtual bool hit(const ray3<T>& r, const T t_min, const T t_max, hit_rec<T>& hit) const = 0;
 };
 
-template<typename T>
+template <typename T>
 class sphere : public geometry<T> {
 public:
   point3<T> m_center;
@@ -60,5 +60,28 @@ public:
     return true;
   }
 };
+
+template <typename T>
+vec3<T> random_in_unit_sphere() {
+  while (true) {
+    auto p = vec3<T>::random(-1, 1);
+    if (p.length_sqr() >= 1) continue;
+    return p;
+  }
+}
+
+template <typename T>
+vec3<T> random_unit_vector() {
+  return random_in_unit_sphere<T>().unit();
+}
+
+template <typename T>
+vec3<T> random_in_hemisphere(const vec3<T>& normal) {
+  auto vius = random_in_unit_sphere<T>();
+  if (vius.dot(normal) > 0.0f) // It is in the same hemisphere as the normal
+    return vius;
+  else
+    return vius * -1;
+}
 
 #endif

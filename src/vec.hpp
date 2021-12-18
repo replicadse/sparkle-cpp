@@ -13,6 +13,19 @@ public:
     e[2] = e2;
   }
 
+  inline static vec3<T> random() {
+    return vec3(
+      static_cast<T>(random_float()),
+      static_cast<T>(random_float()),
+      static_cast<T>(random_float()));
+  }
+  inline static vec3<T> random(const T min, const T max) {
+    return vec3(
+      static_cast<T>(random_float(min, max)),
+      static_cast<T>(random_float(min, max)),
+      static_cast<T>(random_float(min, max)));
+  }
+
   inline T x() const { return e[0]; }
   inline T y() const { return e[1]; }
   inline T z() const { return e[2]; }
