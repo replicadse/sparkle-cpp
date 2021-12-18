@@ -53,11 +53,17 @@ void generate_world(geometry_group<T>& world) {
   world.add(make_shared<sphere<float>>(point3<float>(0.0, 0, -1.0), 0.5, material_center));
   world.add(make_shared<sphere<float>>(point3<float>(-1.0, -0.3, -2.0), 0.2, material_left));
   world.add(make_shared<sphere<float>>(point3<float>(0.6, 0.1, -1.5), 0.5, material_right));
+
+  world.add(make_shared<sphere<float>>(point3<float>(-2.0, 0.1, -4), 0.3, material_right));
+  world.add(make_shared<sphere<float>>(point3<float>(-1.0, 0.3, -4), 0.5, material_left));
+  world.add(make_shared<sphere<float>>(point3<float>(0.0, 0.2, -4), 0.2, material_center));
+  world.add(make_shared<sphere<float>>(point3<float>(1, 0, -4), 0.6, material_left));
+  world.add(make_shared<sphere<float>>(point3<float>(2, -0.5, -4), 0.4, material_right));
 }
 
 int main() {
     const float aspect_ratio = 16.0f / 10.0f;
-    const int image_width = 5120;
+    const int image_width = 2560;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int samples_per_pixel = 16;
     const int max_depth = 16;
@@ -78,7 +84,7 @@ int main() {
     geometry_group<float> world;
     generate_world(world);
 
-    auto NUM_THREADS = std::thread::hardware_concurrency();
+    auto NUM_THREADS = static_cast<size_t>(fmax(std::thread::hardware_concurrency() - 2, 1));
     std::cerr << image_width << " x " << image_height << "\n\n";
     std::cerr << "Workloads for " << NUM_THREADS << " threads: " << '\n';
     auto workloads = std::vector<std::pair<int, int>>();
