@@ -4,7 +4,7 @@
 
 #include "util.hpp"
 #include "geometry.hpp"
-#include "scene.hpp"
+#include "geometry_group.hpp"
 #include "camera.hpp"
 #include "material.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef GEOMETRY_GROUP_H
+#define GEOMETRY_GROUP_H
 
 template <typename T>
 class geometry_group : public geometry<T> {
